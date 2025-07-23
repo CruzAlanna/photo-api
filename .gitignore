@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+
+# Database files
+*.db
+*.sqlite*
+
+# User secrets
+appsettings.Development.json
+
+# IDE files
+.vscode/
+.vs/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Package restore
+project.lock.json
+project.fragment.lock.json
+artifacts/
