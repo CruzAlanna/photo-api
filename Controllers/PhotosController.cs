@@ -60,6 +60,28 @@ namespace PhotoApi.Controllers  // Change "PhotoApi" to your actual project name
     [HttpPut("{id}")]
     public async Task<ActionResult<Photo>> Update(int id, [FromBody] UpdatePhotoRequest request)
     {
+      var photo = await _context.Photos.FindAsync(id);
+      
+      if (photo == null)
+      {
+          return NotFound();
+      }
+
+      // We use PUT here to replace the full resource; switch to PATCH if you teach JSON-Patch later
+      photo.Name = request.Name ?? photo.Name;
+      photo.Url = request.Url ?? photo.Url;
+      photo.Width = request.Width ?? photo.Width;
+      photo.Height = request.Height ?? photo.Height;
+
+      await _context.SaveChangesAsync();
+      
+      return Ok(photo);
+    }
+
+    // DESTROY ACTION:
+    [HttpDelete("{id}")]
+      public async Task<ActionResult> Destroy(int id)
+      {
         var photo = await _context.Photos.FindAsync(id);
         
         if (photo == null)
@@ -67,27 +89,21 @@ namespace PhotoApi.Controllers  // Change "PhotoApi" to your actual project name
             return NotFound();
         }
 
-        // We use PUT here to replace the full resource; switch to PATCH if you teach JSON-Patch later
-        photo.Name = request.Name ?? photo.Name;
-        photo.Url = request.Url ?? photo.Url;
-        photo.Width = request.Width ?? photo.Width;
-        photo.Height = request.Height ?? photo.Height;
-
+        _context.Photos.Remove(photo);
         await _context.SaveChangesAsync();
         
-        return Ok(photo);
-    }
+        return NoContent(); // HTTP 204 - successful deletion with no content
+      }
 
-
-    // ADD THE REQUEST CLASS INSIDE THE CONTROLLER CLASS (at the bottom):
-    public class CreatePhotoRequest
-    {
-      public string Name { get; set; } = "";
-      public string Url { get; set; } = "";
-      public int Width { get; set; }
-      public int Height { get; set; }
-      // Note: CreatedAt/UpdatedAt are set automatically, so don't include them in request bodies
-    }
+      // ADD THE REQUEST CLASS INSIDE THE CONTROLLER CLASS (at the bottom):
+      public class CreatePhotoRequest
+      {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+        public int Width { get; set; }
+        public int Height { get; set; }
+        // Note: CreatedAt/UpdatedAt are set automatically, so don't include them in request bodies
+      }
 
     // ADD THIS REQUEST CLASS at the bottom with the other request classes:
     public class UpdatePhotoRequest
