@@ -16,6 +16,7 @@ namespace PhotoApi.Controllers  // Change "PhotoApi" to your actual project name
       _context = context;
     }
 
+    // INDEX ACTION:
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Photo>>> Index()
     {
@@ -23,7 +24,7 @@ namespace PhotoApi.Controllers  // Change "PhotoApi" to your actual project name
       return Ok(photos);
     }
 
-    // ADD THE CREATE ACTION HERE (below Index):
+    // CREATE ACTION:
     [HttpPost]
     public async Task<ActionResult<Photo>> Create([FromBody] CreatePhotoRequest request)
     {
@@ -38,7 +39,21 @@ namespace PhotoApi.Controllers  // Change "PhotoApi" to your actual project name
       _context.Photos.Add(photo);
       await _context.SaveChangesAsync();
 
-      return Ok(photo); // Will change to CreatedAtAction once we add the Show action
+      return CreatedAtAction(nameof(Show), new { id = photo.Id }, photo);
+    }
+
+    // SHOW ACTION:
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Photo>> Show(int id)
+    {
+      var photo = await _context.Photos.FindAsync(id);
+      
+      if (photo == null)
+      {
+          return NotFound();
+      }
+
+      return Ok(photo);
     }
 
     // ADD THE REQUEST CLASS INSIDE THE CONTROLLER CLASS (at the bottom):
